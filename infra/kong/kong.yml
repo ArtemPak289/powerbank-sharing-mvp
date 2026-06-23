@@ -1,0 +1,8 @@
+_format_version: "3.0"
+
+# =============================================================================
+# Kong Declarative Configuration (DB-less mode)
+# Routes and services will be added as microservices are implemented.
+# =============================================================================
+
+services: []
