@@ -31,10 +31,12 @@
             <groupId>com.google.protobuf</groupId>
             <artifactId>protobuf-java-util</artifactId>
         </dependency>
-        <!-- Required for @Generated annotation in Java 9+ -->
+        <!-- Required for @Generated annotation in Java 9+ (gRPC codegen uses javax, not jakarta) -->
         <dependency>
-            <groupId>jakarta.annotation</groupId>
-            <artifactId>jakarta.annotation-api</artifactId>
+            <groupId>org.apache.tomcat</groupId>
+            <artifactId>annotations-api</artifactId>
+            <version>6.0.53</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 

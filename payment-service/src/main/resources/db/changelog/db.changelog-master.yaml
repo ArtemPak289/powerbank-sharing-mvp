@@ -1,0 +1,5 @@
+databaseChangeLog:
+  # Migration files will be included here as they are created.
+  # Example:
+  # - include:
+  #     file: db/changelog/changes/001-create-cards-table.yaml

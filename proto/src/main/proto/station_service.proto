@@ -1,0 +1,39 @@
+syntax = "proto3";
+
+package powerbank;
+
+option java_multiple_files = true;
+option java_package = "com.powerbank.proto.station";
+
+// ============================================================================
+//  Station Service — gRPC API
+// ============================================================================
+
+service StationService {
+  rpc GetStations (GetStationsRequest) returns (GetStationsResponse);
+  rpc GetStationById (GetStationByIdRequest) returns (StationResponse);
+}
+
+message GetStationsRequest {
+  double latitude = 1;
+  double longitude = 2;
+  int32 radius_meters = 3;
+}
+
+message GetStationsResponse {
+  repeated StationResponse stations = 1;
+}
+
+message GetStationByIdRequest {
+  string station_id = 1;
+}
+
+message StationResponse {
+  string id = 1;
+  string name = 2;
+  string address = 3;
+  double latitude = 4;
+  double longitude = 5;
+  int32 available_slots = 6;
+  int32 total_slots = 7;
+}

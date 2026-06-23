@@ -1,0 +1,58 @@
+syntax = "proto3";
+
+package powerbank;
+
+option java_multiple_files = true;
+option java_package = "com.powerbank.proto.rental";
+
+// ============================================================================
+//  Rental Service — gRPC API
+// ============================================================================
+
+service RentalService {
+  rpc CreateRental (CreateRentalRequest) returns (CreateRentalResponse);
+  rpc GetRentalStatus (GetRentalStatusRequest) returns (RentalStatusResponse);
+  rpc GetRentalHistory (GetRentalHistoryRequest) returns (GetRentalHistoryResponse);
+  rpc FinishRental (FinishRentalRequest) returns (FinishRentalResponse);
+}
+
+message CreateRentalRequest {
+  string station_id = 1;
+  string card_id = 2;
+  string user_id = 3;
+}
+
+message CreateRentalResponse {
+  string rental_id = 1;
+  string status = 2;
+}
+
+message GetRentalStatusRequest {
+  string rental_id = 1;
+}
+
+message RentalStatusResponse {
+  string rental_id = 1;
+  string status = 2;
+  string station_id = 3;
+  string started_at = 4;
+}
+
+message GetRentalHistoryRequest {
+  string user_id = 1;
+}
+
+message GetRentalHistoryResponse {
+  repeated RentalStatusResponse rentals = 1;
+}
+
+message FinishRentalRequest {
+  string rental_id = 1;
+  string return_station_id = 2;
+}
+
+message FinishRentalResponse {
+  string rental_id = 1;
+  string status = 2;
+  string total_amount = 3;
+}
