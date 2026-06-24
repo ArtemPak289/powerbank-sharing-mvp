@@ -1,5 +1,91 @@
 databaseChangeLog:
-  # Migration files will be included here as they are created.
-  # Example:
-  # - include:
-  #     file: db/changelog/changes/001-create-rentals-table.yaml
+  - changeSet:
+      id: 001-create-rentals-table
+      author: powerbank
+      changes:
+        - createTable:
+            tableName: rentals
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: station_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: card_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: power_bank_id
+                  type: uuid
+              - column:
+                  name: return_station_id
+                  type: uuid
+              - column:
+                  name: slot_number
+                  type: int
+              - column:
+                  name: status
+                  type: varchar(30)
+                  defaultValue: CREATED
+                  constraints:
+                    nullable: false
+              - column:
+                  name: idempotency_key
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: total_amount
+                  type: numeric(12,2)
+                  defaultValueNumeric: 0.00
+              - column:
+                  name: started_at
+                  type: timestamptz
+              - column:
+                  name: finished_at
+                  type: timestamptz
+              - column:
+                  name: created_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+        - createIndex:
+            indexName: idx_rentals_user_id
+            tableName: rentals
+            columns:
+              - column:
+                  name: user_id
+        - createIndex:
+            indexName: idx_rentals_status
+            tableName: rentals
+            columns:
+              - column:
+                  name: status
+        - createIndex:
+            indexName: idx_rentals_idempotency_key
+            tableName: rentals
+            columns:
+              - column:
+                  name: idempotency_key

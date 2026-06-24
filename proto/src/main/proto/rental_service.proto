@@ -5,21 +5,67 @@ package powerbank;
 option java_multiple_files = true;
 option java_package = "com.powerbank.proto.rental";
 
+import "google/api/annotations.proto";
+
 // ============================================================================
-//  Rental Service — gRPC API
+//  Rental Service — gRPC API for rental lifecycle and card management
 // ============================================================================
 
 service RentalService {
-  rpc CreateRental (CreateRentalRequest) returns (CreateRentalResponse);
-  rpc GetRentalStatus (GetRentalStatusRequest) returns (RentalStatusResponse);
-  rpc GetRentalHistory (GetRentalHistoryRequest) returns (GetRentalHistoryResponse);
-  rpc FinishRental (FinishRentalRequest) returns (FinishRentalResponse);
+
+  // POST /v1/rental — create a new rental
+  rpc CreateRental (CreateRentalRequest) returns (CreateRentalResponse) {
+    option (google.api.http) = {
+      post: "/v1/rental"
+      body: "*"
+    };
+  }
+
+  // GET /v1/rental/{rental_id}/status — poll rental status
+  rpc GetRentalStatus (GetRentalStatusRequest) returns (RentalStatusResponse) {
+    option (google.api.http) = {
+      get: "/v1/rental/{rental_id}/status"
+    };
+  }
+
+  // GET /v1/rental/history — list user's rentals
+  rpc GetRentalHistory (GetRentalHistoryRequest) returns (GetRentalHistoryResponse) {
+    option (google.api.http) = {
+      get: "/v1/rental/history"
+    };
+  }
+
+  // POST /v1/rental/finish — finish active rental
+  rpc FinishRental (FinishRentalRequest) returns (FinishRentalResponse) {
+    option (google.api.http) = {
+      post: "/v1/rental/finish"
+      body: "*"
+    };
+  }
+
+  // POST /v1/cards — bind a payment card
+  rpc BindCard (BindCardRequest) returns (BindCardResponse) {
+    option (google.api.http) = {
+      post: "/v1/cards"
+      body: "*"
+    };
+  }
+
+  // GET /v1/cards — list user's cards
+  rpc GetUserCards (GetUserCardsRequest) returns (GetUserCardsResponse) {
+    option (google.api.http) = {
+      get: "/v1/cards"
+    };
+  }
 }
+
+// ---- Rental messages ----
 
 message CreateRentalRequest {
   string station_id = 1;
   string card_id = 2;
-  string user_id = 3;
+  string user_id = 3;         // from JWT or client
+  string idempotency_key = 4; // unique per request
 }
 
 message CreateRentalResponse {
@@ -35,7 +81,10 @@ message RentalStatusResponse {
   string rental_id = 1;
   string status = 2;
   string station_id = 3;
-  string started_at = 4;
+  string power_bank_id = 4;
+  string started_at = 5;
+  string finished_at = 6;
+  string total_amount = 7;
 }
 
 message GetRentalHistoryRequest {
@@ -55,4 +104,34 @@ message FinishRentalResponse {
   string rental_id = 1;
   string status = 2;
   string total_amount = 3;
+}
+
+// ---- Card messages ----
+
+message BindCardRequest {
+  string card_number = 1;
+  string holder_name = 2;
+  string expiry_date = 3;
+  string user_id = 4;
+}
+
+message BindCardResponse {
+  string card_id = 1;
+  bool success = 2;
+  string message = 3;
+}
+
+message GetUserCardsRequest {
+  // user_id extracted from JWT
+}
+
+message CardInfo {
+  string id = 1;
+  string masked_number = 2;
+  string holder_name = 3;
+  string expiry_date = 4;
+}
+
+message GetUserCardsResponse {
+  repeated CardInfo cards = 1;
 }

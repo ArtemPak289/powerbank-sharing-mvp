@@ -1,5 +1,127 @@
 databaseChangeLog:
-  # Migration files will be included here as they are created.
-  # Example:
-  # - include:
-  #     file: db/changelog/changes/001-create-stations-table.yaml
+  - changeSet:
+      id: 001-create-stations-table
+      author: powerbank
+      changes:
+        - createTable:
+            tableName: stations
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: address
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: latitude
+                  type: double
+                  constraints:
+                    nullable: false
+              - column:
+                  name: longitude
+                  type: double
+                  constraints:
+                    nullable: false
+              - column:
+                  name: total_slots
+                  type: int
+                  defaultValueNumeric: 6
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 002-create-power-banks-table
+      author: powerbank
+      changes:
+        - createTable:
+            tableName: power_banks
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: station_id
+                  type: uuid
+                  constraints:
+                    nullable: true
+              - column:
+                  name: slot_number
+                  type: int
+              - column:
+                  name: status
+                  type: varchar(20)
+                  defaultValue: AVAILABLE
+                  remarks: "AVAILABLE, LOCKED, RENTED"
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseTableName: power_banks
+            baseColumnNames: station_id
+            referencedTableName: stations
+            referencedColumnNames: id
+            constraintName: fk_power_banks_station
+        - createIndex:
+            indexName: idx_power_banks_station_id
+            tableName: power_banks
+            columns:
+              - column:
+                  name: station_id
+
+  - changeSet:
+      id: 003-seed-stations
+      author: powerbank
+      comment: "Seed test data: 3 stations with 6 powerbanks each"
+      changes:
+        - sql:
+            sql: |
+              INSERT INTO stations (id, name, address, latitude, longitude, total_slots) VALUES
+                ('a1b2c3d4-0001-4000-8000-000000000001', 'Mall Samarkand', 'Registan Square 1, Samarkand', 39.6542, 66.9597, 6),
+                ('a1b2c3d4-0002-4000-8000-000000000002', 'Tashkent City Park', 'Amir Temur Ave 15, Tashkent', 41.3111, 69.2797, 6),
+                ('a1b2c3d4-0003-4000-8000-000000000003', 'Bukhara Train Station', 'Railway St 3, Bukhara', 39.7745, 64.4229, 6);
+
+              INSERT INTO power_banks (id, station_id, slot_number, status) VALUES
+                (gen_random_uuid(), 'a1b2c3d4-0001-4000-8000-000000000001', 1, 'AVAILABLE'),
+                (gen_random_uuid(), 'a1b2c3d4-0001-4000-8000-000000000001', 2, 'AVAILABLE'),
+                (gen_random_uuid(), 'a1b2c3d4-0001-4000-8000-000000000001', 3, 'AVAILABLE'),
+                (gen_random_uuid(), 'a1b2c3d4-0001-4000-8000-000000000001', 4, 'AVAILABLE'),
+                (gen_random_uuid(), 'a1b2c3d4-0001-4000-8000-000000000001', 5, 'AVAILABLE'),
+                (gen_random_uuid(), 'a1b2c3d4-0001-4000-8000-000000000001', 6, 'AVAILABLE'),
+                (gen_random_uuid(), 'a1b2c3d4-0002-4000-8000-000000000002', 1, 'AVAILABLE'),
+                (gen_random_uuid(), 'a1b2c3d4-0002-4000-8000-000000000002', 2, 'AVAILABLE'),
+                (gen_random_uuid(), 'a1b2c3d4-0002-4000-8000-000000000002', 3, 'AVAILABLE'),
+                (gen_random_uuid(), 'a1b2c3d4-0002-4000-8000-000000000002', 4, 'AVAILABLE'),
+                (gen_random_uuid(), 'a1b2c3d4-0002-4000-8000-000000000002', 5, 'AVAILABLE'),
+                (gen_random_uuid(), 'a1b2c3d4-0002-4000-8000-000000000002', 6, 'AVAILABLE'),
+                (gen_random_uuid(), 'a1b2c3d4-0003-4000-8000-000000000003', 1, 'AVAILABLE'),
+                (gen_random_uuid(), 'a1b2c3d4-0003-4000-8000-000000000003', 2, 'AVAILABLE'),
+                (gen_random_uuid(), 'a1b2c3d4-0003-4000-8000-000000000003', 3, 'AVAILABLE'),
+                (gen_random_uuid(), 'a1b2c3d4-0003-4000-8000-000000000003', 4, 'AVAILABLE'),
+                (gen_random_uuid(), 'a1b2c3d4-0003-4000-8000-000000000003', 5, 'AVAILABLE'),
+                (gen_random_uuid(), 'a1b2c3d4-0003-4000-8000-000000000003', 6, 'AVAILABLE');

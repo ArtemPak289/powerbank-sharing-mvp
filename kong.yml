@@ -1,0 +1,64 @@
+_format_version: "3.0"
+services:
+  - name: auth-service
+    url: grpc://host.docker.internal:9091
+    routes:
+      - name: auth-routes
+        paths:
+          - /
+        protocols:
+          - http
+          - https
+    plugins:
+      - name: grpc-gateway
+        config:
+          proto: /opt/kong/protos/auth_service.proto
+
+  - name: station-service
+    url: grpc://host.docker.internal:9093
+    routes:
+      - name: station-routes
+        paths:
+          - /v1/stations
+        protocols:
+          - http
+          - https
+    plugins:
+      - name: grpc-gateway
+        config:
+          proto: /opt/kong/protos/station_service.proto
+      - name: jwt
+        config:
+          claims_to_verify:
+            - exp
+
+  - name: rental-service
+    url: grpc://host.docker.internal:9094
+    routes:
+      - name: rental-routes
+        paths:
+          - /v1/rental
+          - /v1/cards
+        protocols:
+          - http
+          - https
+    plugins:
+      - name: grpc-gateway
+        config:
+          proto: /opt/kong/protos/rental_service.proto
+      - name: jwt
+        config:
+          claims_to_verify:
+            - exp
+
+consumers:
+  - username: powerbank-user
+
+jwt_secrets:
+  - consumer: powerbank-user
+    key: http://localhost:8080/realms/powerbank
+    algorithm: RS256
+    rsa_public_key: |
+      -----BEGIN PUBLIC KEY-----
+      MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEApJQemwNC82qzPkJiquZHgHiPM3rDnOaWhxv6lHvaQvDaPwGSnICW64wqmFodEQSMBwk0T1mYX3cs/cztCnlMlfaW4K0tpS2OMqs4lyloz7U8zWsqHy6aTox30FDER8zNquB5bCX1GRVJNuf49d/ccBycDMz8Lm6TDP1mkTK1RSSBhbDdyIcMQOm4Btt0vD59iq6/75waza4nTWqjCu5sfM3S9oGElGRooj6k3DTMKAm48M+KfryVbeCavcC6uV39WZiRbOkSWKLvzuDFe/Zik5vi0mN93dPcolEoZFzYILFzLwWxJN9sqmRgoeIXDbjuAWGVvLEHaETAkQ5lnJihTwIDAQAB
+      -----END PUBLIC KEY-----

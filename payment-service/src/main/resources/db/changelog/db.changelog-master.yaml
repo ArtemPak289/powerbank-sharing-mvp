@@ -1,5 +1,136 @@
 databaseChangeLog:
-  # Migration files will be included here as they are created.
-  # Example:
-  # - include:
-  #     file: db/changelog/changes/001-create-cards-table.yaml
+  - changeSet:
+      id: 001-create-cards-table
+      author: powerbank
+      changes:
+        - createTable:
+            tableName: cards
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: card_number
+                  type: varchar(19)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: masked_number
+                  type: varchar(19)
+                  remarks: "**** **** **** 1234"
+              - column:
+                  name: holder_name
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: expiry_date
+                  type: varchar(5)
+                  remarks: "MM/YY"
+                  constraints:
+                    nullable: false
+              - column:
+                  name: balance
+                  type: numeric(12,2)
+                  defaultValueNumeric: 10000.00
+                  remarks: "Emulated card balance"
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+        - createIndex:
+            indexName: idx_cards_user_id
+            tableName: cards
+            columns:
+              - column:
+                  name: user_id
+
+  - changeSet:
+      id: 002-create-payments-table
+      author: powerbank
+      changes:
+        - createTable:
+            tableName: payments
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: card_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: rental_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: amount
+                  type: numeric(12,2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: status
+                  type: varchar(20)
+                  defaultValue: PENDING
+                  constraints:
+                    nullable: false
+              - column:
+                  name: idempotency_key
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: created_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+        - createIndex:
+            indexName: idx_payments_idempotency_key
+            tableName: payments
+            columns:
+              - column:
+                  name: idempotency_key
+        - createIndex:
+            indexName: idx_payments_rental_id
+            tableName: payments
+            columns:
+              - column:
+                  name: rental_id
+        - createIndex:
+            indexName: idx_payments_card_id
+            tableName: payments
+            columns:
+              - column:
+                  name: card_id

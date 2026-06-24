@@ -1,0 +1,89 @@
+syntax = "proto3";
+
+package powerbank;
+
+option java_multiple_files = true;
+option java_package = "com.powerbank.proto.auth";
+
+import "google/api/annotations.proto";
+
+// ============================================================================
+//  Auth Service — external-facing gRPC API (transcoded from REST by Kong)
+// ============================================================================
+
+service AuthService {
+
+  // POST /auth/phone — request OTP code
+  rpc RequestOtp (RequestOtpRequest) returns (RequestOtpResponse) {
+    option (google.api.http) = {
+      post: "/auth/phone"
+      body: "*"
+    };
+  }
+
+  // POST /auth/verify — verify OTP, receive JWT
+  rpc VerifyOtp (VerifyOtpRequest) returns (VerifyOtpResponse) {
+    option (google.api.http) = {
+      post: "/auth/verify"
+      body: "*"
+    };
+  }
+
+  // POST /v1/auth/refresh — refresh access token
+  rpc RefreshToken (RefreshTokenRequest) returns (TokenResponse) {
+    option (google.api.http) = {
+      post: "/v1/auth/refresh"
+      body: "*"
+    };
+  }
+
+  // GET /v1/me — current user profile
+  rpc GetProfile (GetProfileRequest) returns (ProfileResponse) {
+    option (google.api.http) = {
+      get: "/v1/me"
+    };
+  }
+}
+
+// ---- Request / Response messages ----
+
+message RequestOtpRequest {
+  string phone = 1;
+}
+
+message RequestOtpResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message VerifyOtpRequest {
+  string phone = 1;
+  string code = 2;
+}
+
+message VerifyOtpResponse {
+  string access_token = 1;
+  string refresh_token = 2;
+  int64 expires_in = 3;
+  string user_id = 4;
+}
+
+message RefreshTokenRequest {
+  string refresh_token = 1;
+}
+
+message TokenResponse {
+  string access_token = 1;
+  string refresh_token = 2;
+  int64 expires_in = 3;
+}
+
+message GetProfileRequest {
+  // User ID is extracted from JWT metadata by the service
+}
+
+message ProfileResponse {
+  string id = 1;
+  string phone = 2;
+  string created_at = 3;
+}

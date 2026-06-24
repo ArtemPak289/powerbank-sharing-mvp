@@ -20,6 +20,7 @@
 
     <modules>
         <module>proto</module>
+        <module>common</module>
         <module>user-service</module>
         <module>payment-service</module>
         <module>station-service</module>
@@ -45,14 +46,13 @@
         <grpc.version>1.68.1</grpc.version>
         <grpc-spring-boot.version>3.1.0.RELEASE</grpc-spring-boot.version>
         <protobuf.version>4.28.3</protobuf.version>
-        <protobuf-maven-plugin.version>0.6.1</protobuf-maven-plugin.version>
+        <protobuf-maven-plugin.version>0.5.1</protobuf-maven-plugin.version>
         <os-maven-plugin.version>1.7.1</os-maven-plugin.version>
+        <proto-google-common.version>2.41.0</proto-google-common.version>
 
         <!-- Keycloak -->
         <keycloak-admin.version>26.0.2</keycloak-admin.version>
 
-        <!-- Mapping / Utilities -->
-        <mapstruct.version>1.6.3</mapstruct.version>
         <lombok.version>1.18.34</lombok.version>
     </properties>
 
@@ -64,6 +64,11 @@
             <dependency>
                 <groupId>com.powerbank</groupId>
                 <artifactId>proto</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.powerbank</groupId>
+                <artifactId>common</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
@@ -96,6 +101,11 @@
                 <groupId>com.google.protobuf</groupId>
                 <artifactId>protobuf-java-util</artifactId>
                 <version>${protobuf.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.api.grpc</groupId>
+                <artifactId>proto-google-common-protos</artifactId>
+                <version>${proto-google-common.version}</version>
             </dependency>
 
             <!-- ======================== -->
@@ -130,19 +140,6 @@
                 <version>${keycloak-admin.version}</version>
             </dependency>
 
-            <!-- ======================== -->
-            <!--   Mapping / Utilities    -->
-            <!-- ======================== -->
-            <dependency>
-                <groupId>org.mapstruct</groupId>
-                <artifactId>mapstruct</artifactId>
-                <version>${mapstruct.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.mapstruct</groupId>
-                <artifactId>mapstruct-processor</artifactId>
-                <version>${mapstruct.version}</version>
-            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -174,6 +171,22 @@
                                 <artifactId>lombok</artifactId>
                             </exclude>
                         </excludes>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.13.0</version>
+                    <configuration>
+                        <source>${java.version}</source>
+                        <target>${java.version}</target>
+                        <annotationProcessorPaths>
+                            <path>
+                                <groupId>org.projectlombok</groupId>
+                                <artifactId>lombok</artifactId>
+                                <version>${lombok.version}</version>
+                            </path>
+                        </annotationProcessorPaths>
                     </configuration>
                 </plugin>
             </plugins>

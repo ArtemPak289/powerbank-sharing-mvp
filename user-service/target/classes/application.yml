@@ -2,7 +2,7 @@ spring:
   application:
     name: user-service
   datasource:
-    url: jdbc:postgresql://localhost:5432/user_db
+    url: jdbc:postgresql://localhost:54320/user_db
     username: postgres
     password: postgres
   jpa:
@@ -21,3 +21,11 @@ server:
 grpc:
   server:
     port: 9091
+
+keycloak:
+  server-url: http://localhost:8080
+  realm: powerbank
+  client-id: powerbank-app
+  admin:
+    username: admin
+    password: admin

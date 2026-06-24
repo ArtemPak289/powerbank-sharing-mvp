@@ -5,19 +5,35 @@ package powerbank;
 option java_multiple_files = true;
 option java_package = "com.powerbank.proto.station";
 
+import "google/api/annotations.proto";
+
 // ============================================================================
-//  Station Service — gRPC API
+//  Station Service — gRPC API for station queries
 // ============================================================================
 
 service StationService {
-  rpc GetStations (GetStationsRequest) returns (GetStationsResponse);
-  rpc GetStationById (GetStationByIdRequest) returns (StationResponse);
+
+  // GET /v1/stations — list nearby stations
+  rpc GetStations (GetStationsRequest) returns (GetStationsResponse) {
+    option (google.api.http) = {
+      get: "/v1/stations"
+    };
+  }
+
+  // GET /v1/stations/{station_id} — station details
+  rpc GetStationById (GetStationByIdRequest) returns (StationResponse) {
+    option (google.api.http) = {
+      get: "/v1/stations/{station_id}"
+    };
+  }
 }
+
+// ---- Messages ----
 
 message GetStationsRequest {
   double latitude = 1;
   double longitude = 2;
-  int32 radius_meters = 3;
+  int32 radius_meters = 3;  // 0 = return all
 }
 
 message GetStationsResponse {
@@ -36,4 +52,11 @@ message StationResponse {
   double longitude = 5;
   int32 available_slots = 6;
   int32 total_slots = 7;
+  repeated SlotInfo slots = 8;
+}
+
+message SlotInfo {
+  int32 slot_number = 1;
+  bool occupied = 2;
+  string power_bank_id = 3;
 }

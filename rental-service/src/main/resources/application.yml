@@ -2,7 +2,7 @@ spring:
   application:
     name: rental-service
   datasource:
-    url: jdbc:postgresql://localhost:5432/rental_db
+    url: jdbc:postgresql://localhost:54320/rental_db
     username: postgres
     password: postgres
   jpa:
@@ -15,14 +15,14 @@ spring:
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
   kafka:
-    bootstrap-servers: localhost:9092
+    bootstrap-servers: localhost:29092
     consumer:
-      group-id: rental-service
+      group-id: rental-service-group
       auto-offset-reset: earliest
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
       properties:
-        spring.json.trusted.packages: "com.powerbank.*"
+        spring.json.trusted.packages: "*"
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
@@ -33,7 +33,3 @@ server:
 grpc:
   server:
     port: 9094
-  client:
-    station-service:
-      address: static://localhost:9093
-      negotiation-type: plaintext

@@ -1,5 +1,103 @@
 databaseChangeLog:
-  # Migration files will be included here as they are created.
-  # Example:
-  # - include:
-  #     file: db/changelog/changes/001-create-users-table.yaml
+  - changeSet:
+      id: 001-create-users-table
+      author: powerbank
+      changes:
+        - createTable:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: phone
+                  type: varchar(20)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: external_id
+                  type: varchar(255)
+                  remarks: "Keycloak user ID"
+                  constraints:
+                    unique: true
+              - column:
+                  name: keycloak_password
+                  type: varchar(255)
+                  remarks: "Generated password for Keycloak auth (user never sees it)"
+              - column:
+                  name: created_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+        - createIndex:
+            indexName: idx_users_phone
+            tableName: users
+            columns:
+              - column:
+                  name: phone
+        - createIndex:
+            indexName: idx_users_external_id
+            tableName: users
+            columns:
+              - column:
+                  name: external_id
+
+  - changeSet:
+      id: 002-create-otp-codes-table
+      author: powerbank
+      changes:
+        - createTable:
+            tableName: otp_codes
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: phone
+                  type: varchar(20)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: code
+                  type: varchar(6)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: verified
+                  type: boolean
+                  defaultValueBoolean: false
+              - column:
+                  name: expires_at
+                  type: timestamptz
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+        - createIndex:
+            indexName: idx_otp_codes_phone_code
+            tableName: otp_codes
+            columns:
+              - column:
+                  name: phone
+              - column:
+                  name: code
